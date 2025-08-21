@@ -18,7 +18,7 @@ public class Product {
     @JoinColumn(name = "seller_id")
     private Member seller;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;
     private LocalDateTime registeredAt;
 

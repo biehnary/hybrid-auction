@@ -5,25 +5,22 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Bid {
+public class AuctionResult {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int bidAmount;
-
-    @Enumerated(EnumType.STRING)
-    private BidType bidType;
-
-    private LocalDateTime bidTime;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-
     @ManyToOne
-    @JoinColumn(name = "bidder_id")
-    private Member bidder;
+    @JoinColumn(name = "winner_id")
+    private Member winner;
 
+    private int finalPrice;
+    private LocalDateTime auctionEndTime;
 
+    @Enumerated(EnumType.STRING)
+    private ResultStatus status;
 }
