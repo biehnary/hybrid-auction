@@ -37,11 +37,38 @@ public class MemberRepository {
     return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
   }
 
+  public void delete(Member member) {
+    if (em.contains(member)) {
+      em.remove(member);
+    } else {
+      // Merge detached entity before removal to avoid exceptions
+      em.remove(em.merge(member));
+    }
+  }
+
   public void deleteById(Long memberId) {
     em.remove(findById(memberId));
   }
 
+  public Long count() {
+    return em.createQuery("select count(m) from Member m", Long.class).getSingleResult();
+  }
 
+  public boolean existsById(Long memberId) {
+    Long count = em.createQuery("select count(m) from Member m where m.id = :id", Long.class)
+        .setParameter("id", memberId)
+        .getSingleResult();
+    return count > 0;
+  }
+
+  public Member findByUserName(String username) {
+    List<Member> results = em.createQuery("select m from Member m where username = :username", Member.class)
+        .setParameter("username", username)
+        .getResultList();
+    return results.isEmpty() ? null : results.get(0);
+  }
+
+   
 
 
 
