@@ -1,10 +1,12 @@
 package com.biehnary.auction.live_auction.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
