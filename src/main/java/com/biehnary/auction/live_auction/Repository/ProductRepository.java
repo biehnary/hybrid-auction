@@ -1,5 +1,6 @@
 package com.biehnary.auction.live_auction.Repository;
 
+import com.biehnary.auction.live_auction.entity.AuctionStatus;
 import com.biehnary.auction.live_auction.entity.Member;
 import com.biehnary.auction.live_auction.entity.Product;
 import jakarta.persistence.EntityManager;
@@ -61,6 +62,31 @@ public class ProductRepository {
         .setParameter("id", productId)
         .getSingleResult();
     return result > 0;
+  }
+
+  // == Auction Status ==
+  public List<Product> findByAuctionStatus(AuctionStatus auctionStatus) {
+    return em.createQuery("select p from Product p where p.auctionStatus = :status", Product.class)
+        .setParameter("status", auctionStatus)
+        .getResultList();
+  }
+
+  // == seller ==
+  public List<Product> findBySeller(Member seller) {
+    return em.createQuery("select p from Product p where p.seller = :seller", Product.class)
+        .setParameter("seller", seller)
+        .getResultList();
+  }
+
+  public List<Product> findAllOrderByRegisteredAt() {
+    return em.createQuery("select p from Product p order by p.registeredAt asc", Product.class)
+        .getResultList();
+  }
+
+  public List<Product> findByNameContaining(String keyword) {
+    return em.createQuery("select p from Product p where p.name like :keyword", Product.class)
+        .setParameter("keyword", "%" + keyword + "%")
+        .getResultList();
   }
 
 
