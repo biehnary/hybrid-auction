@@ -61,12 +61,25 @@ public class MemberRepository {
     return count > 0;
   }
 
+  public boolean existsByUsername(String username) {
+    Long count = em.createQuery("select count(m) from Member m where m.username = :username", Long.class)
+        .setParameter("username", username)
+        .getSingleResult();
+    return count > 0;
+  }
+
   public Member findByUserName(String username) {
-    List<Member> results = em.createQuery("select m from Member m where username = :username", Member.class)
+    List<Member> results = em.createQuery("select m from Member m where m.username = :username", Member.class)
         .setParameter("username", username)
         .getResultList();
-    return results.isEmpty() ? null : results.get(0);
+    return results.isEmpty() ? null : results.getFirst();
   }
+
+  public List<Member> findByIsActiveTrue() {
+    return em.createQuery("select m from Member m where m.isActive = true", Member.class)
+        .getResultList();
+  }
+
 
    
 
