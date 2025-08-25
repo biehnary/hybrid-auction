@@ -9,21 +9,21 @@ import java.time.LocalDateTime;
 @Getter
 public class Product {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private int price;
-    private String imageUrl;
-    private String description;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String name;
+  private int price;
+  private String imageUrl;
+  private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private Member seller;
+  @ManyToOne
+  @JoinColumn(name = "seller_id")
+  private Member seller;
 
-    @Enumerated(EnumType.STRING)
-    private AuctionStatus auctionStatus;
-    private LocalDateTime registeredAt;
-
+  @Enumerated(EnumType.STRING)
+  private AuctionStatus auctionStatus;
+  private LocalDateTime registeredAt;
 
 
 }

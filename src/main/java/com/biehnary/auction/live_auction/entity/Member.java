@@ -12,12 +12,13 @@ import java.time.LocalDateTime;
 @Getter
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String username;
-    private String password;
-    private LocalDateTime joinDate;
-    private Boolean isActive;
+  private String username;
+  private String password;
+  private LocalDateTime joinDate;
+  private Boolean isActive;
 
 }

@@ -7,14 +7,14 @@ import java.time.LocalDateTime;
 @Entity
 public class ChatMessage {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private Member sender;
+  @ManyToOne
+  @JoinColumn(name = "sender_id")
+  private Member sender;
 
-    private String content;
-    private LocalDateTime sendTime;
+  private String content;
+  private LocalDateTime sendTime;
 }
