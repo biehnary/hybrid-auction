@@ -17,12 +17,12 @@ public class Bid {
 
   private LocalDateTime bidTime;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id")
   private Product product;
 
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "bidder_id")
   private Member bidder;
 
