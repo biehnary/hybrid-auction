@@ -46,7 +46,7 @@ public class BidRepository {
     return count > 0;
   }
 
-  public List<Bid> findRecentBidByProduct(Product product, int limit) {
+  public List<Bid> findRecentBidsByProduct(Product product, int limit) {
     return em.createQuery("select b from Bid b where b.product = :product order by b.bidTime desc "
         , Bid.class)
         .setParameter("product", product)
