@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Table(indexes = {@Index(name="Idx_product_bidTime", columnList = "product_id, bidTime")})
 public class Bid {
 
   @Id

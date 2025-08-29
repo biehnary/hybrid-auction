@@ -1,6 +1,7 @@
 package com.biehnary.auction.live_auction.Repository;
 
 import com.biehnary.auction.live_auction.entity.Bid;
+import com.biehnary.auction.live_auction.entity.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -43,6 +44,14 @@ public class BidRepository {
         .setParameter("id", bidId)
         .getSingleResult();
     return count > 0;
+  }
+
+  public List<Bid> findRecentBidByProduct(Product product, int limit) {
+    return em.createQuery("select b from Bid b where b.product = :product order by b.bidTime desc "
+        , Bid.class)
+        .setParameter("product", product)
+        .setMaxResults(limit)
+        .getResultList();
   }
 
 
