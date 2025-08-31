@@ -1,9 +1,11 @@
 package com.biehnary.auction.live_auction.Repository;
 
 import com.biehnary.auction.live_auction.entity.Bid;
+import com.biehnary.auction.live_auction.entity.Member;
 import com.biehnary.auction.live_auction.entity.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,6 +48,7 @@ public class BidRepository {
     return count > 0;
   }
 
+  // == Utilities ==
   public List<Bid> findRecentBidsByProduct(Product product, int limit) {
     return em.createQuery("select b from Bid b where b.product = :product order by b.bidTime desc "
         , Bid.class)
@@ -54,8 +57,27 @@ public class BidRepository {
         .getResultList();
   }
 
+  public Long countDistinctBiddersByProduct(Product product) {
+    return em.createQuery("select count(distinct b.bidder) from Bid b where b.product = :product"
+            , Long.class)
+        .setParameter("product", product)
+        .getSingleResult();
+  }
 
+  public Bid findHighestBidByProduct(Product product) {
+    return em.createQuery("select b from Bid b where b.product = :product order by b.bidAmount desc",
+            Bid.class)
+        .setParameter("product",product)
+        .setMaxResults(1)
+        .getSingleResult();
+  }
 
+  public List<Bid> findByBidder(Member bidder) {
+    return em.createQuery("select b from Bid b where b.bidder = :bidder order by b.bidTime desc",
+            Bid.class)
+        .setParameter("bidder", bidder)
+        .getResultList();
+  }
 
 
 
