@@ -18,8 +18,13 @@ public class BidRepository {
 
   // == CURD Operation ==
   // no delete - all bids stay in the system for audit purpose
-  public void save(Bid bid) {
-    em.persist(bid);
+  public Bid save(Bid bid) {
+    if (bid.getId() == null) {
+      em.persist(bid);
+      return bid;
+    } else {
+      return em.merge(bid);
+    }
   }
 
   public Bid findById(Long bidId) {

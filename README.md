@@ -93,3 +93,53 @@ Repository 메서드명 = 비즈니스 요구사항의 반영
 🚀 지금 경험의 가치
 **"Repository 설계가 이렇게 어렵구나"**를 깨달은 것 = 큰 성장
 실무에서도 시니어 개발자들이 가장 고민하는 부분 중 하나예요!
+
+---
+
+## AuctionResultRepository
+### 구현 메서드리스트
+- [x] save()
+- save의 관례, 저장한 객체반환, 중복확인
+- [x] findById(Long id)
+- 옵셔널 도입. 옵셔널의 의의, 명확성, 헬퍼메서드
+- Optional.empty() 의 의의. 값이 없음을 명확히하는 객체. 조건문으로 에외처리하지않고 예외안전,
+- 엠티 값을 받았을 때 명확히 실행할 수 있는 헬퍼메서드의 존재. orElse등 
+- 성능의 이점을 보려고 만든 클래스가아니라 버그를줄이고, 예외에서 안전하고 명확한 의도와 가독성을 높이기위한 도구!
+- [x] findByWinner(Member winner)
+- 기본 정렬순서를 준것이 유효타. 메서드 자체의 존재의미에 대해서도 고민했음. 낙찰자를 기준으로 결과를 반환하는 것이 의미가있을까?
+- 자신이 입찰한 모든 물품에 대한 리스트를 반환받고, 거기에 낙찰 여부를 표시하는 것이 훨씬 ux적으로 좋아보이지만
+- '나 자신의' 낙찰 리스트도 볼 여지가 있기에 일단 구현을 한다.
+- 시간순 정렬을 디폴트로한다. (낙찰 시점) 하지만 라이브 물품이 아닌 경우 같은 시점에 낙찰이 결정되는 프로세스를 가지기 떄문에,
+- 동일한 시간에 한해 낙찰금액을 기준으로 소팅하기로 헀다. 이미 엔티티가 가진 필드를 활용했고, 해당 물품들에 대한 소팅이
+- 크게 유의미하진 않기 때문에 알파벳순서보다는 낙찰금액 순이 더 맞다고 판단했음.
+- [ ] findByProduct
+- [ ] findByProductNameContaining 
+
+---
+
+### 단일쿼리로 입찰 물품 중 낙찰 표시하는법...
+
+좋습니다 근데 이 winner를 사용해서 내가 입찰한 product 목록을 반환했을떄 나의 낙찰여부를 좀더 간단히 구현할수있을지요?
+아무래도 리스트 중 위너와 조회한 멤버가 같은지 비교하고 이건 그냥 봐도 좀 로직이 썩 좋아보이지않는데 보통 이런식으로 구현이 되나요?
+
+단일 쿼리 방식의 논리
+이 방법은 Bid와 AuctionResult 테이블을 조인하고, CASE 문을 사용하여 결과를 한 번에 가져오는 것입니다.
+SELECT 절: Product 엔티티와 함께,
+해당 상품의 낙찰자(AuctionResult.winner)가 현재 조회하는 Member와 같은지 확인하는 boolean 값을 선택합니다.
+FROM 절: Bid 엔티티에서 시작해 Product와 AuctionResult 엔티티를 조인합니다.
+WHERE 절: 현재 Member가 입찰한 상품들만 필터링합니다.
+이러한 로직을 JPQL 쿼리로 구현하면 다음과 같은 형태가 됩니다.
+
+SELECT p, CASE WHEN ar.winner = :member THEN true ELSE false END
+FROM Bid b
+JOIN b.product p
+LEFT JOIN AuctionResult ar ON ar.product = p
+WHERE b.bidder = :member
+SELECT p: 입찰한 상품을 선택합니다.
+
+CASE WHEN ar.winner = :member THEN true ELSE false END: AuctionResult의 winner가 현재 조회하는 member와 같으면 true를,
+아니면 false를 반환합니다. 이것이 바로 낙찰 여부를 알려주는 플래그 역할을 합니다.
+LEFT JOIN: 낙찰 결과(AuctionResult)가 없는 상품도 결과에 포함시키기 위해 LEFT JOIN을 사용합니다.
+WHERE b.bidder = :member: 현재 멤버가 입찰한 기록만 필터링합니다.
+이렇게 하면, 서비스 계층에서는 단 하나의 쿼리를 호출하고, 반환된 리스트를 받아서 바로 UI에 표시할 수 있습니다. 쿼리 자체가 모든 로직을 처리해주므로, 
+별도의 반복문이나 추가적인 데이터베이스 호출이 필요 없습니다.

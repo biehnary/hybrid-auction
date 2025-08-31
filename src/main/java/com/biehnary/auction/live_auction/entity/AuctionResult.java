@@ -3,8 +3,10 @@ package com.biehnary.auction.live_auction.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class AuctionResult {
 
   @Id
