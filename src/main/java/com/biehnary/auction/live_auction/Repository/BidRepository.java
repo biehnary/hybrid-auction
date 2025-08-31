@@ -65,11 +65,14 @@ public class BidRepository {
   }
 
   public Bid findHighestBidByProduct(Product product) {
-    return em.createQuery("select b from Bid b where b.product = :product order by b.bidAmount desc",
+    List<Bid> results = em.createQuery(
+            "select b from Bid b where b.product = :product order by b.bidAmount desc",
             Bid.class)
-        .setParameter("product",product)
+        .setParameter("product", product)
         .setMaxResults(1)
-        .getSingleResult();
+        .getResultList();
+
+    return results.isEmpty() ? null : results.getFirst();
   }
 
   public List<Bid> findByBidder(Member bidder) {
