@@ -112,8 +112,16 @@ Repository 메서드명 = 비즈니스 요구사항의 반영
 - 시간순 정렬을 디폴트로한다. (낙찰 시점) 하지만 라이브 물품이 아닌 경우 같은 시점에 낙찰이 결정되는 프로세스를 가지기 떄문에,
 - 동일한 시간에 한해 낙찰금액을 기준으로 소팅하기로 헀다. 이미 엔티티가 가진 필드를 활용했고, 해당 물품들에 대한 소팅이
 - 크게 유의미하진 않기 때문에 알파벳순서보다는 낙찰금액 순이 더 맞다고 판단했음.
-- [ ] findByProduct
+- [x] findByProduct
+- 재경매를 고려한 List반환. 최근 결과 순으로 나열
 - [ ] findByProductNameContaining 
+- findByProductNameContaining을 구현하는데
+1. ProductRepository에 있ㄴ느 findByNameContaining + AuctionResultRepository의 findByProduct 결합.
+2. Join 쿼리 작성
+- 2번 선택. 1번은 모든 상품을 일단 로드하는데서 오는 부하, 만에하나 여러 상품을 동시 호출하는 인터페이스가 있다면, N+1문제 생김.
+- 상품뒤지고 > +1 거기서 리절트찾기. 만약 상품이많으면 n번 리절트를 또 찾는 쿼리가 날아감.
+- 해당기능의 용도와 예상되는 빈번한 호출. join쿼리 학습을 위해서 후자로 선택
+- 
 
 ---
 
