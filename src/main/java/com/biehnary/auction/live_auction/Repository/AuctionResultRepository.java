@@ -51,7 +51,13 @@ public class AuctionResultRepository {
         .getResultList();
   }
 
-
+  public List<AuctionResult> findAuctionHistoryByProductName(String name) {
+    return em.createQuery("select a from AuctionResult a "
+        + "join a.product p where p.name like :name "
+            + "order by a.auctionEndTime desc", AuctionResult.class)
+        .setParameter("name", "%" + name + "%")
+        .getResultList();
+  }
 
 
 
