@@ -4,7 +4,6 @@ import com.biehnary.auction.live_auction.entity.ChatMessage;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
-import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 @Repository
