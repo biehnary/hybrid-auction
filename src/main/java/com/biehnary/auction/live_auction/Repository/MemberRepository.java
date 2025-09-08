@@ -24,19 +24,6 @@ public class MemberRepository {
     }
   }
 
-  // (throws exception if not found)
-  public Member findById(Long memberId) {
-    Member member = em.find(Member.class, memberId);
-    if (member == null) {
-      throw new IllegalArgumentException("Member not found: " + memberId);
-    }
-    return member;
-  }
-
-  public List<Member> findAll() {
-    return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
-  }
-
   public void delete(Member member) {
     if (em.contains(member)) {
       em.remove(member);
@@ -52,6 +39,19 @@ public class MemberRepository {
 
   public Long count() {
     return em.createQuery("select count(m) from Member m", Long.class).getSingleResult();
+  }
+
+  // (throws exception if not found)
+  public Member findById(Long memberId) {
+    Member member = em.find(Member.class, memberId);
+    if (member == null) {
+      throw new IllegalArgumentException("Member not found: " + memberId);
+    }
+    return member;
+  }
+
+  public List<Member> findAll() {
+    return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
   }
 
   public boolean existsById(Long memberId) {

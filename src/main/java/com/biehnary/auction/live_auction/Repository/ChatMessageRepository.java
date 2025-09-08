@@ -1,6 +1,7 @@
 package com.biehnary.auction.live_auction.Repository;
 
 import com.biehnary.auction.live_auction.entity.ChatMessage;
+import com.biehnary.auction.live_auction.entity.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -17,7 +18,13 @@ public class ChatMessageRepository {
     return message;
   }
 
+  public Long count() {
+    return em.createQuery("select count (c) from ChatMessage c", Long.class)
+        .getSingleResult();
+  }
+
   // == find tools ==
+
   public List<ChatMessage> findRecentMessages(int limit) {
     return em.createQuery("select c from ChatMessage c order by c.sendTime desc",
             ChatMessage.class)
@@ -25,11 +32,12 @@ public class ChatMessageRepository {
         .getResultList();
   }
 
-  public Long count() {
-    return em.createQuery("select count (c) from ChatMessage c", Long.class)
-        .getSingleResult();
+  public List<ChatMessage> findBySender(Member sender) {
+    return em.createQuery("select c from ChatMessage c where c.sender = :sender"
+            + " order by c.sendTime desc", ChatMessage.class)
+        .setParameter("sender", sender)
+        .getResultList();
   }
-
 
 
 
