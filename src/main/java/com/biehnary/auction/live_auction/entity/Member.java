@@ -21,4 +21,15 @@ public class Member {
   private LocalDateTime joinDate;
   private Boolean isActive;
 
+  // Methods
+
+  // factory method. it needs to return
+  public static Member create(String username, String password) {
+    Member member = new Member();
+    member.username = username;
+    member.password = password;
+    member.joinDate = LocalDateTime.now();
+    member.isActive = true;
+    return member;
+  }
 }
