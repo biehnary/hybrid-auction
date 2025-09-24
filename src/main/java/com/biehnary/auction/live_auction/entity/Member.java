@@ -12,17 +12,16 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Member {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Setter(AccessLevel.NONE) private Long id;
+  private Long id;
 
   private String username;
-  @Setter(AccessLevel.NONE) private String password;
-  @Setter(AccessLevel.NONE) private LocalDateTime joinDate;
-  @Setter(AccessLevel.NONE) private Boolean isActive;
+  private String password;
+  private LocalDateTime joinDate;
+  private Boolean isActive;
 
   // ==Methods==
 
@@ -38,6 +37,11 @@ public class Member {
 
   public void changePassword(String password) {
     this.password = password;
+  }
+
+  // update
+  public void updateInfo(String username) {
+    this.username = username;
   }
 
   // member activation

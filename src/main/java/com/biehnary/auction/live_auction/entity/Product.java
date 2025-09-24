@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -24,6 +25,35 @@ public class Product {
   @Enumerated(EnumType.STRING)
   private AuctionStatus auctionStatus;
   private LocalDateTime registeredAt;
+
+  // == field crud ==
+  public static Product createProduct(String name, int price, String imageUrl, String description,
+      Member seller) {
+    Product product = new Product();
+    product.name = name;
+    product.price = price;
+    product.imageUrl = imageUrl;
+    product.description = description;
+    product.seller = seller;
+    product.auctionStatus = AuctionStatus.WAITING;
+    product.registeredAt = LocalDateTime.now();
+    return product;
+  }
+
+  public void updateProduct(String name, int price, Member seller, String imageUrl, String description) {
+    this.name = name;
+    this.price = price;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.seller = seller;
+  }
+
+  c
+
+
+
+
+
 
 
 }
