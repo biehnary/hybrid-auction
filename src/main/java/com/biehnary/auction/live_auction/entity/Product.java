@@ -48,7 +48,9 @@ public class Product {
     this.seller = seller;
   }
 
-  c
+  public void changeAuctionStatus(AuctionStatus newStatus) {
+    this.auctionStatus = newStatus;
+  }
 
 
 
