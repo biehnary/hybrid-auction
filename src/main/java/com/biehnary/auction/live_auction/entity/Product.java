@@ -40,12 +40,11 @@ public class Product {
     return product;
   }
 
-  public void updateProduct(String name, int price, Member seller, String imageUrl, String description) {
+  public void updateProduct(String name, int price, String imageUrl, String description) {
     this.name = name;
     this.price = price;
     this.imageUrl = imageUrl;
     this.description = description;
-    this.seller = seller;
   }
 
   public void changeAuctionStatus(AuctionStatus newStatus) {
