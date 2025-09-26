@@ -117,19 +117,6 @@ public class MemberRepository {
     }
   }
 
-  // (throws exception if not found)
-  public Member findById(Long memberId) {
-    Member member = em.find(Member.class, memberId);
-    if (member == null) {
-      throw new IllegalArgumentException("Member not found: " + memberId);
-    }
-    return member;
-  }
-
-  public List<Member> findAll() {
-    return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
-  }
-
   public void delete(Member member) {
     if (em.contains(member)) {
       em.remove(member);
@@ -145,6 +132,19 @@ public class MemberRepository {
 
   public Long count() {
     return em.createQuery("select count(m) from Member m", Long.class).getSingleResult();
+  }
+
+  // (throws exception if not found)
+  public Member findById(Long memberId) {
+    Member member = em.find(Member.class, memberId);
+    if (member == null) {
+      throw new IllegalArgumentException("Member not found: " + memberId);
+    }
+    return member;
+  }
+
+  public List<Member> findAll() {
+    return em.createQuery("SELECT m FROM Member m", Member.class).getResultList();
   }
 
   public boolean existsById(Long memberId) {
@@ -228,7 +228,64 @@ public class AuctionResultRepository {
         .getResultList();
   }
 
+  public List<AuctionResult> findAuctionHistoryByProductName(String name) {
+    return em.createQuery("select a from AuctionResult a "
+        + "join a.product p where p.name like :name "
+            + "order by a.auctionEndTime desc", AuctionResult.class)
+        .setParameter("name", "%" + name + "%")
+        .getResultList();
+  }
 
+
+
+
+
+
+
+
+
+
+}
+package com.biehnary.auction.live_auction.Repository;
+
+import com.biehnary.auction.live_auction.entity.ChatMessage;
+import com.biehnary.auction.live_auction.entity.Member;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import java.util.List;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ChatMessageRepository {
+
+  @PersistenceContext
+  private EntityManager em;
+
+  public ChatMessage save(ChatMessage message) {
+    em.persist(message);
+    return message;
+  }
+
+  public Long count() {
+    return em.createQuery("select count (c) from ChatMessage c", Long.class)
+        .getSingleResult();
+  }
+
+  // == find tools ==
+
+  public List<ChatMessage> findRecentMessages(int limit) {
+    return em.createQuery("select c from ChatMessage c order by c.sendTime desc",
+            ChatMessage.class)
+        .setMaxResults(limit)
+        .getResultList();
+  }
+
+  public List<ChatMessage> findBySender(Member sender) {
+    return em.createQuery("select c from ChatMessage c where c.sender = :sender"
+            + " order by c.sendTime desc", ChatMessage.class)
+        .setParameter("sender", sender)
+        .getResultList();
+  }
 
 
 
@@ -348,6 +405,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -368,6 +426,36 @@ public class Product {
   @Enumerated(EnumType.STRING)
   private AuctionStatus auctionStatus;
   private LocalDateTime registeredAt;
+
+  // == field crud ==
+  public static Product createProduct(String name, int price, String imageUrl, String description,
+      Member seller) {
+    Product product = new Product();
+    product.name = name;
+    product.price = price;
+    product.imageUrl = imageUrl;
+    product.description = description;
+    product.seller = seller;
+    product.auctionStatus = AuctionStatus.WAITING;
+    product.registeredAt = LocalDateTime.now();
+    return product;
+  }
+
+  public void updateProduct(String name, int price, String imageUrl, String description) {
+    this.name = name;
+    this.price = price;
+    this.imageUrl = imageUrl;
+    this.description = description;
+  }
+
+  public void changeAuctionStatus(AuctionStatus newStatus) {
+    this.auctionStatus = newStatus;
+  }
+
+
+
+
+
 
 
 }
@@ -450,9 +538,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -467,7 +557,49 @@ public class Member {
   private LocalDateTime joinDate;
   private Boolean isActive;
 
+  // ==Methods==
+
+  // factory method. it needs to return
+  public static Member createMember(String username, String password) {
+    Member member = new Member();
+    member.username = username;
+    member.password = password;
+    member.joinDate = LocalDateTime.now();
+    member.isActive = true;
+    return member;
+  }
+
+  public void changePassword(String password) {
+    this.password = password;
+  }
+
+  // update
+  public void updateInfo(String username) {
+    this.username = username;
+  }
+
+  // member activation
+  public void activate() {
+    this.isActive = true;
+  }
+
+  public void deactivate() {
+    this.isActive = false;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
 package com.biehnary.auction.live_auction.entity;
 
 import jakarta.persistence.*;
@@ -500,6 +632,116 @@ public enum ResultStatus {
   COMPLETED,
   FAILED,
   CANCELLED
+}
+package com.biehnary.auction.live_auction.service;
+
+import com.biehnary.auction.live_auction.Repository.MemberRepository;
+import com.biehnary.auction.live_auction.entity.Member;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+// minimal member management for mvp
+@Service
+public class MemberService {
+
+  private final MemberRepository memberRepository;
+
+  // Generator injection - spring
+  public MemberService(MemberRepository memberRepository) {
+    this.memberRepository = memberRepository;
+  }
+
+  public void join(String username, String password) {
+    Member member = Member.createMember(username, password);
+    memberRepository.save(member);
+  }
+
+  @Transactional
+  public void updateMember(Long memberId, String newUsername, String newPassword) {
+    Member member = memberRepository.findById(memberId);
+    member.changePassword(newPassword);
+    member.setUsername(newUsername);
+  }
+
+  // soft delete for logs
+  @Transactional
+  public void deactivateMember(Long memberId) {
+    Member member = memberRepository.findById(memberId);
+    member.deactivate();
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+}
+package com.biehnary.auction.live_auction.service;
+
+import com.biehnary.auction.live_auction.Repository.ProductRepository;
+import com.biehnary.auction.live_auction.entity.AuctionStatus;
+import com.biehnary.auction.live_auction.entity.Member;
+import com.biehnary.auction.live_auction.entity.Product;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class ProductService {
+  private final ProductRepository productRepository;
+
+  public ProductService(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
+
+  @Transactional
+  public Product registerProduct(String name, int price, String imageUrl,
+      String description, Member seller) {
+    Product product = Product.createProduct(name, price, imageUrl, description, seller);
+    return productRepository.save(product);
+  }
+
+  @Transactional
+  public void updateProduct(Long productId,String name, int price, String imageUrl,
+      String description) {
+    Product product = productRepository.findById(productId);
+    product.updateProduct(name, price, imageUrl, description);
+  }
+
+  @Transactional
+  public void deleteProduct(Long productId) {
+    Product product = productRepository.findById(productId);
+    // 제한사항
+    if (product.getAuctionStatus() == AuctionStatus.LIVE) {
+      throw new IllegalStateException("진행 중인 경매는 삭제할 수 없습니다.");
+    }
+
+    productRepository.delete(product);
+  }
+
+  @Transactional
+  public void changeAuctionStatus(Long productId, AuctionStatus status) {
+    Product product = productRepository.findById(productId);
+    product.changeAuctionStatus(status);
+  }
+
+
+
+
+
+
+
+
+}
+package com.biehnary.auction.live_auction.service;
+
+public class BidService {
+
 }
 package com.biehnary.auction.live_auction;
 
