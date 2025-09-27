@@ -14,6 +14,7 @@ public class Bid {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   private int bidAmount;
 
   @Enumerated(EnumType.STRING)
@@ -29,6 +30,23 @@ public class Bid {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "bidder_id")
   private Member bidder;
+
+  // methods
+  public static Bid createBid(Product product, Member bidder, int bidAmount) {
+    Bid bid = new Bid();
+    bid.product = product;
+    bid.bidder = bidder;
+    bid.bidAmount = bidAmount;
+    bid.bidTime = LocalDateTime.now();
+    bid.bidType = (product.getAuctionStatus() == AuctionStatus.WAITING)
+        ? BidType.PRE_BID : BidType.LIVE_BID;
+    return bid;
+  }
+
+
+
+
+
 
 
 }
