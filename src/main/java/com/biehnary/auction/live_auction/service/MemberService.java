@@ -25,7 +25,7 @@ public class MemberService {
   public void updateMember(Long memberId, String newUsername, String newPassword) {
     Member member = memberRepository.findById(memberId);
     member.changePassword(newPassword);
-    member.setUsername(newUsername);
+    member.updateInfo(newUsername);
   }
 
   // soft delete for logs
