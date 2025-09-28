@@ -22,4 +22,16 @@
   repository 절대적으로 db에 오르내리는 변경점.
   엔티티에서는 '필드에 직접 접근 지양'. 다만 기본적인 crud메서드 제공하는거 나쁘지않음
   service에서는 위 두가지를 조합해 실질적 비즈니스 로직을 구현?
+
+
+
+## BidService
+- entity 메서드작성
+- placeBid 작성. validate 로직
+
+## 중간 단위 테스트
+- Mock data
+- oracle DB연동
+- build.gradle 추가 (pom.xml) > application.properties 추가
+- ddl-auto 설정. test환경 create-drop
 - 

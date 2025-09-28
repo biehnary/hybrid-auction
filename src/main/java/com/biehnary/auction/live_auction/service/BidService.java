@@ -39,6 +39,10 @@ public class BidService {
     if (bidAmount <= 0 || currentHighest != null && bidAmount <= currentHighest.getBidAmount()) {
       throw new IllegalArgumentException("유효하지 않은 입찰금액입니다.");
     }
+
+    if (bidAmount < product.getPrice()) {
+      throw new IllegalArgumentException("시작가보다 높게 입찰해야 합니다.");
+    }
   }
 
 
