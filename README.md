@@ -28,6 +28,11 @@
 ## BidService
 - entity 메서드작성
 - placeBid 작성. validate 로직
+- 계층 분리 필요성. controller 에서는 직접적으로 repository 에 접근하지 않고 service 레이어를 통하는게 정석
+- 그 이유에 대한 고찰.
+- 조회 로직 구현
+- 서비스 클래스에 transactional(readOnly = ture)를 붙인 이유. 조회위주의 서비스로직. 데이터 무결성
+- 조작성 메서드 작성 시 따로 Transactional 어노테이션 붙이기 가능(placeBid..)
 
 ## 중간 단위 테스트
 - Mock data

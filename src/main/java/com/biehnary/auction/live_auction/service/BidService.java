@@ -7,10 +7,14 @@ import com.biehnary.auction.live_auction.entity.AuctionStatus;
 import com.biehnary.auction.live_auction.entity.Bid;
 import com.biehnary.auction.live_auction.entity.Member;
 import com.biehnary.auction.live_auction.entity.Product;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BidService {
 
@@ -18,7 +22,8 @@ public class BidService {
   private final ProductRepository productRepository;
   private final BidRepository bidRepository;
 
-
+  // Only create method in v.1
+  @Transactional
   public void placeBid(Long productId, Long bidderId, int bidAmount) {
     Product product = productRepository.findById(productId);
     Member bidder = memberRepository.findById(bidderId);
@@ -44,6 +49,33 @@ public class BidService {
       throw new IllegalArgumentException("시작가보다 높게 입찰해야 합니다.");
     }
   }
+
+  // read
+  public Optional<Bid> getCurrentHighestBid(Long productId) {
+    Product product = productRepository.findById(productId);
+    return Optional.ofNullable(bidRepository.findHighestBidByProduct(product));
+  }
+
+  // BidList
+  public List<Bid> getRecentBid(Long productId, int limit) {
+    Product product = productRepository.findById(productId);
+    return bidRepository.findRecentBidsByProduct(product, limit);
+  }
+
+  // count bidders
+  public Long getBidderCount(Long productId) {
+    Product product = productRepository.findById(productId);
+    return bidRepository.countDistinctBiddersByProduct(product);
+  }
+
+  // logs for bidder
+  public List<Bid> getUserBids(Long bidderId) {
+    Member member = memberRepository.findById(bidderId);
+    return bidRepository.findByBidder(member);
+  }
+
+
+
 
 
 
