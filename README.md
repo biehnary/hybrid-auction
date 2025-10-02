@@ -39,4 +39,29 @@
 - oracle DB연동
 - build.gradle 추가 (pom.xml) > application.properties 추가
 - ddl-auto 설정. test환경 create-drop
+
+
+## AuctionResultService
+- 해당 서비스 계층의 명확한 역할?
+> auctionservice한번 해보자
+뭐가필요할까 옥션서비스는 뭐하는 계층일까
+비드에서 입찰을 하곧 만들면 auctionservice에서 데이터를 컨트롤하게되는건가?
+주로 auctionResult를 다루는것인가
+그렇다면 AuctionResultRepository 메서드 시그니처들을보면서한번 생각해보면..
+사용자를 통해 낙찰결과 찾기
+물건에 대한 낙찰결과
+auctionStatus에 대한 필터링 조회... 유찰, 실패, 최근낙찰 등등,,, 이거는 아마 결과 개수도 인자로받을필요가?
+키워드로 결과 조회..
+경매 상태전환이 중요하구나 비드에서는 입찰자체만 다루기때문에 이미 live라거나 경매중이라는 상태에대한 전제는 여기에 맡기고 진행되는거고
+정확합니다. 계층  책임 분리가 명확하네요.
+책임 분리 구조
+BidService:
+입찰 행위 자체만 담당
+"이 상품에 입찰할 수 있는가?" 정도만 검증 (WAITING/LIVE 상태 확인)
+경매 상태를 변경하지 않음
+AuctionService:
+경매의 생명주기 전체를 관리
+상태 전환 (WAITING → LIVE → COMPLETED/FAILED → RE_AUCTION)
+낙찰/유찰 판정 및 AuctionResult 생성
+
 - 
